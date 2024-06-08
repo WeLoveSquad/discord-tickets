@@ -18,7 +18,7 @@ services:
     networks:
       - wls-tickets-discord-bot-internal
 
-   wls-tickets-discord-bot:
+  wls-tickets-discord-bot:
     image: ghcr.io/welovesquad/tickets-discord-bot:${IMAGE_TAG:-latest}
     container_name: wls-tickets-discord-bot
     depends_on:

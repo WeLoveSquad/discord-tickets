@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  wls-tickets-discord-bot-postgres:
+    image: postgres:15
+    container_name: wls-tickets-discord-bot-postgres
+    restart: unless-stopped
+    environment:
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_URL}"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - wls-tickets-discord-bot-postgres-volume:/var/lib/postgresql/data:rw
+    networks:
+      - wls-tickets-discord-bot-internal
+
+   wls-tickets-discord-bot:
+    image: ghcr.io/welovesquad/tickets-discord-bot:${IMAGE_TAG:-latest}
+    container_name: wls-tickets-discord-bot
+    depends_on:
+      wls-tickets-discord-bot-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      proxy:
+      wls-tickets-discord-bot-internal:
+    volumes:
+      - wls-tickets-discord-bot-volume:/home/container/user
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+    environment:
+      DB_CONNECTION_URL: ${POSTGRES_URL}
+      DISCORD_SECRET: ${DISCORD_SECRET}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      DB_PROVIDER: postgresql
+      HTTP_EXTERNAL: http://127.0.0.1:8169
+      HTTP_HOST: 0.0.0.0
+      HTTP_INTERNAL:
+      HTTP_PORT: 8169
+      HTTP_TRUST_PROXY: "true"
+      INVALIDATE_TOKENS:
+      OVERRIDE_ARCHIVE: null
+      PUBLIC_BOT: "false"
+      PUBLISH_COMMANDS: "false"
+      SUPER: 319467558166069248
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+
+      - "traefik.http.routers.wls-tickets-discord-bot-secure.entrypoints=https"
+      - "traefik.http.routers.wls-tickets-discord-bot-secure.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.wls-tickets-discord-bot-secure.service=wls-tickets-discord-bot"
+      - "traefik.http.services.wls-tickets-discord-bot.loadbalancer.server.port=8169"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "${GELF_ADDRESS}"
+
+networks:
+  wls-tickets-discord-bot-internal:
+  proxy:
+    external: true
+
+volumes:
+  wls-tickets-discord-bot-postgres-volume:
+  wls-tickets-discord-bot-volume:

@@ -40,7 +40,7 @@ services:
       DB_PROVIDER: postgresql
       HTTP_EXTERNAL: ${HTTP_EXTERNAL}
       HTTP_HOST: 0.0.0.0
-      HTTP_INTERNAL:
+      HTTP_INTERNAL: ${HTTP_INTERNAL}
       HTTP_PORT: 8169
       HTTP_TRUST_PROXY: "true"
       INVALIDATE_TOKENS:

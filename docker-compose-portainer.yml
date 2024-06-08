@@ -29,10 +29,9 @@ services:
       proxy:
       wls-tickets-discord-bot-internal:
     volumes:
-      - wls-tickets-discord-bot-volume:/home/container/user
+      - wls-tickets-discord-bot-volume:/home/container
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-
     environment:
       DB_CONNECTION_URL: ${POSTGRES_URL}
       DISCORD_SECRET: ${DISCORD_SECRET}

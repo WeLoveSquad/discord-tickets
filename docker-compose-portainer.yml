@@ -47,7 +47,7 @@ services:
       OVERRIDE_ARCHIVE: null
       PUBLIC_BOT: "false"
       PUBLISH_COMMANDS: "false"
-      SUPER: 319467558166069248
+      SUPER: ${SUPER_USER_IDS}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
@@ -56,6 +56,10 @@ services:
       - "traefik.http.routers.wls-tickets-discord-bot-secure.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.wls-tickets-discord-bot-secure.service=wls-tickets-discord-bot"
       - "traefik.http.services.wls-tickets-discord-bot.loadbalancer.server.port=8169"
+
+      - "traefik.http.middlewares.wls-tickets-discord-bot-auth.basicauth.users=tickets:$$apr1$$sbgpqk64$$Wg19BIJoZrSilhYEh8Yu50"
+      - "traefik.http.routers.wls-tickets-discord-bot-secure.middlewares=wls-tickets-discord-bot-auth"
+
     logging:
       driver: gelf
       options:

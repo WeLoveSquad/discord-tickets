@@ -46,7 +46,7 @@ services:
       INVALIDATE_TOKENS:
       OVERRIDE_ARCHIVE: null
       PUBLIC_BOT: "false"
-      PUBLISH_COMMANDS: "false"
+      PUBLISH_COMMANDS: "true"
       SUPER: ${SUPER_USER_IDS}
     labels:
       - "traefik.enable=true"
